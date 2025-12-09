@@ -1,0 +1,43 @@
+name: Vérification et déploiement
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+
+      - name: Exécution d'une commande simple
+        run: echo "Pipeline Lab 12 exécuté avec succès !"
+
+      - name: Installer HTMLHint
+        run: npm install -g htmlhint
+
+      - name: Vérifier HTML
+        run: htmlhint .
+
+      - name: Installer Stylelint
+        run: npm install -g stylelint stylelint-config-standard
+
+      - name: Vérifier CSS
+        run: stylelint "**/*.css"
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+
+      - name: Déployer sur GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: .
